@@ -1,1 +1,1 @@
-# bigdata_mapreduce
+bigdata-mapreduce-student
