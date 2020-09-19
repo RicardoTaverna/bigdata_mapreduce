@@ -1,5 +1,4 @@
-package ex01;
-
+package ex02;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
@@ -15,7 +14,7 @@ import org.apache.log4j.BasicConfigurator;
 
 import java.io.IOException;
 
-public class country_transaction {
+public class year_transaction {
     public static void main(String[] args) throws Exception {
         BasicConfigurator.configure();
 
@@ -25,15 +24,15 @@ public class country_transaction {
         Path input = new Path("in/transactions.csv");
 
         // arquivo de saida
-        Path output = new Path("output/ex01");
+        Path output = new Path("output/ex02");
 
         // criacao do job e seu nome
-        Job j = new Job(c, "country-transaction");
+        Job j = new Job(c, "year-transaction");
 
         // Registro das classes
-        j.setJarByClass(country_transaction.class); //classe do main
-        j.setMapperClass(MapEx01.class); // classe do mapper
-        j.setReducerClass(ReduceEx01.class); // classe do reduce
+        j.setJarByClass(year_transaction.class); //classe do main
+        j.setMapperClass(MapEx02.class); // classe do mapper
+        j.setReducerClass(ReduceEx02.class); // classe do reduce
 
         // Definicao dos tipos de saida
         j.setOutputKeyClass(Text.class);
@@ -47,7 +46,7 @@ public class country_transaction {
         System.exit(j.waitForCompletion(true) ? 0 : 1);
     }
 
-    public static class MapEx01 extends Mapper<LongWritable, Text, Text, IntWritable>{
+    public static class MapEx02 extends Mapper<LongWritable, Text, Text, IntWritable> {
 
         public void map(LongWritable key, Text value, Context con) throws IOException, InterruptedException {
             // Obter valor da linha
@@ -56,37 +55,34 @@ public class country_transaction {
             // Split por ;
             String[] colunas = linha.split(";");
 
-            // pegar pais como chave
+            // pegar ano como chave
 
-            Text pais = new Text(colunas[0]);
-
-            String paisText = pais.toString();
+            Text ano = new Text(colunas[1]);
 
             // valor de saida
             IntWritable valorSaida = new IntWritable(1);
-            if(paisText.equals("Brazil")) {
-                con.write(pais, valorSaida);
-            }
+
+            con.write(ano, valorSaida);
+
 
         }
 
     }
 
-    public static class ReduceEx01 extends Reducer<Text, IntWritable, Text, IntWritable>{
-        public void reduce(Text pais, Iterable<IntWritable> values, Context con) throws IOException, InterruptedException {
+    public static class ReduceEx02 extends Reducer<Text, IntWritable, Text, IntWritable> {
+        public void reduce(Text ano, Iterable<IntWritable> values, Context con) throws IOException, InterruptedException {
             // Loop para somar todas as ocorrências
 
             int soma = 0;
 
-                for (IntWritable vlr : values) {
-                    soma += vlr.get();
-                }
+            for (IntWritable vlr : values) {
+                soma += vlr.get();
+            }
 
             // Escreve os resultados finais no arquivo
 
-            con.write(pais, new IntWritable(soma));
+            con.write(ano, new IntWritable(soma));
 
         }
     }
 }
-
