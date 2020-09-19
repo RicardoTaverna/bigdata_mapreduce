@@ -64,10 +64,14 @@ public class country_transaction {
                 pais = new Text(colunas[0]);
             }
 
+            String paisText = pais.toString();
+
             // valor de saida
             IntWritable valorSaida = new IntWritable(1);
+            if(paisText.equals("Brazil")) {
+                con.write(pais, valorSaida);
+            }
 
-            con.write(pais, valorSaida);
         }
 
     }
@@ -81,6 +85,9 @@ public class country_transaction {
                 for (IntWritable vlr : values) {
                     soma += vlr.get();
                 }
+
+
+
 
             // Escreve os resultados finais no arquivo
 
