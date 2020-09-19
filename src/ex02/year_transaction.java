@@ -55,6 +55,9 @@ public class year_transaction {
             // Split por ;
             String[] colunas = linha.split(";");
 
+            // Ignora cabeçalho
+            if (linha.startsWith("country_or_area")) return;
+
             // pegar ano como chave
 
             Text ano = new Text(colunas[1]);

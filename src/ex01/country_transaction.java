@@ -56,8 +56,10 @@ public class country_transaction {
             // Split por ;
             String[] colunas = linha.split(";");
 
-            // pegar pais como chave
+            // Ignora cabeçalho
+            if (linha.startsWith("country_or_area")) return;
 
+            // pegar pais como chave
             Text pais = new Text(colunas[0]);
 
             String paisText = pais.toString();
