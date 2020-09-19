@@ -22,7 +22,7 @@ public class most_comm_commodity {
         Configuration c = new Configuration();
 
         // arquivo de entrada
-        Path input = new Path("in/transactions.csv");
+        Path input = new Path("in/teste.csv");
 
         // arquivo de saida
         Path output = new Path("output/ex03");
@@ -60,13 +60,16 @@ public class most_comm_commodity {
             if (linha.startsWith("country_or_area")) return;
 
             // pegar ano como chave
-
-            Text ano = new Text(colunas[1]);
+            Text flow = new Text(colunas[4]);
+            String ano = colunas[1];
 
             // valor de saida
             IntWritable valorSaida = new IntWritable(1);
 
-            con.write(ano, valorSaida);
+            if(ano.equals("2016")){
+                con.write(flow, valorSaida);
+            }
+
 
 
         }
@@ -74,7 +77,7 @@ public class most_comm_commodity {
     }
 
     public static class ReduceEx03 extends Reducer<Text, IntWritable, Text, IntWritable> {
-        public void reduce(Text ano, Iterable<IntWritable> values, Context con) throws IOException, InterruptedException {
+        public void reduce(Text flow, Iterable<IntWritable> values, Context con) throws IOException, InterruptedException {
             // Loop para somar todas as ocorrências
 
             int soma = 0;
@@ -85,7 +88,7 @@ public class most_comm_commodity {
 
             // Escreve os resultados finais no arquivo
 
-            con.write(ano, new IntWritable(soma));
+            con.write(flow, new IntWritable(soma));
 
         }
     }
