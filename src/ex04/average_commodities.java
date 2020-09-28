@@ -1,6 +1,7 @@
 package ex04;
 
 
+import advanced.customwritable.AverageTemperature;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.FloatWritable;
@@ -12,6 +13,7 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
+import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.log4j.BasicConfigurator;
 
 import java.io.IOException;
@@ -21,6 +23,7 @@ public class average_commodities {
         BasicConfigurator.configure();
 
         Configuration c = new Configuration();
+        String[] files = new GenericOptionsParser(c, args).getRemainingArgs();
 
         // arquivo de entrada
         Path input = new Path("in/transactions.csv");
@@ -35,7 +38,8 @@ public class average_commodities {
         j.setJarByClass(average_commodities.class); //classe do main
         j.setMapperClass(MapEx04.class); // classe do mapper
         j.setReducerClass(ReduceEx04.class); // classe do reduce
-        j.setReducerClass(Combiner.class);
+        j.setCombinerClass(Combiner.class);
+
 
         // Definir os tipos de saida (Map e reduce)
         j.setMapOutputKeyClass(Text.class);

@@ -25,10 +25,10 @@ public class AverageTemperature {
         Configuration c = new Configuration();
         String[] files = new GenericOptionsParser(c, args).getRemainingArgs();
         // arquivo de entrada
-        Path input = new Path(files[0]);
+        Path input = new Path("in/forestfireinputA.csv");
 
         // arquivo de saida
-        Path output = new Path(files[1]);
+        Path output = new Path("output/teste");
 
         // criacao do job e seu nome
         Job j = new Job(c, "forestfire-estudante");
