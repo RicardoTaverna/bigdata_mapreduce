@@ -22,7 +22,7 @@ public class most_comm_commodity {
         Configuration c = new Configuration();
 
         // arquivo de entrada
-        Path input = new Path("in/teste.csv");
+        Path input = new Path("in/transactions.csv");
 
         // arquivo de saida
         Path output = new Path("output/ex03");

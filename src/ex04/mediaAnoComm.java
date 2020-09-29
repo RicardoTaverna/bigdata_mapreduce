@@ -41,7 +41,6 @@ public class mediaAnoComm implements Writable {
         // Seguindo a mesma ordem do write, isto eh, n e depois soma
         n = Integer.parseInt(in.readUTF());
         soma = Float.parseFloat(in.readUTF());
-
     }
 
     @Override
