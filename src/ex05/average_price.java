@@ -1,7 +1,11 @@
 package ex05;
 
+
+import ex04.average_commodities;
+import ex04.mediaAnoComm;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.FloatWritable;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
@@ -33,10 +37,13 @@ public class average_price {
         j.setJarByClass(average_price.class); //classe do main
         j.setMapperClass(MapEx05.class); // classe do mapper
         j.setReducerClass(ReduceEx05.class); // classe do reduce
+        j.setCombinerClass(Combiner.class);
 
         // Definicao dos tipos de saida
-        j.setOutputKeyClass(Text.class);
-        j.setOutputValueClass(IntWritable.class);
+        j.setOutputKeyClass(customKey.class);
+        j.setOutputValueClass(mediaAnoComm2.class);
+        j.setOutputKeyClass(customKey.class);
+        j.setOutputValueClass(mediaAnoComm2.class);
 
         // cadastro dos arquivos de entrada e saida
         FileInputFormat.addInputPath(j,input);
@@ -46,7 +53,7 @@ public class average_price {
         System.exit(j.waitForCompletion(true) ? 0 : 1);
     }
 
-    public static class MapEx05 extends Mapper<LongWritable, Text, Text, IntWritable> {
+    public static class MapEx05 extends Mapper<LongWritable, Text, customKey, mediaAnoComm2> {
 
         public void map(LongWritable key, Text value, Context con) throws IOException, InterruptedException {
             // Obter valor da linha
@@ -60,33 +67,57 @@ public class average_price {
 
             // pegar ano como chave
             String flow = colunas[4];
-            Text ano = new Text(colunas[1]);
             String pais = colunas[0];
 
-            // valor de saida
-            IntWritable valorSaida = new IntWritable(1);
+            String ano = (colunas[1]);
+            String unit = (colunas[7]);
+            String category = (colunas[9]);
 
-            if(flow.equals("Export") && pais.equals("Brazil")){
-                con.write(ano, valorSaida);
+
+            float trade_usd = Float.parseFloat(colunas[5]);
+
+
+            if( pais.equals("Brazil")){
+                con.write(new customKey(ano,unit,category), new mediaAnoComm2(1,trade_usd));
             }
         }
 
     }
 
-    public static class ReduceEx05 extends Reducer<Text, IntWritable, Text, IntWritable> {
-        public void reduce(Text ano, Iterable<IntWritable> values, Context con) throws IOException, InterruptedException {
+    public static class ReduceEx05 extends Reducer<customKey, mediaAnoComm2, Text, FloatWritable> {
+        public void reduce(customKey key, Iterable<mediaAnoComm2> values, Context con) throws IOException, InterruptedException {
             // Loop para somar todas as ocorrências
 
-            int soma = 0;
+            int somaN = 0;
+            float somaSomas = 0.0f;
 
-            for (IntWritable vlr : values) {
-                soma += vlr.get();
+            for(mediaAnoComm2 obj:values){
+                somaN += obj.getN();
+                somaSomas += obj.getSoma();
+            }
+            // calculando a media
+            float media = somaSomas / somaN;
+
+            // emitir o resultado final (media = X)
+            con.write(new Text(String.valueOf(key.getAno())), new FloatWritable(media));
+
+        }
+    }
+    public static class Combiner extends Reducer<customKey, mediaAnoComm2, customKey, mediaAnoComm2> {
+
+        public void reduce(customKey key, Iterable<mediaAnoComm2> valores, Context con) throws IOException, InterruptedException{
+            // agrupar os valores em um objeto unico (n = soma dos ns vistos no map,
+
+            int somaNs = 0;
+            float somaTemps = 0.0f;
+
+            for(mediaAnoComm2 obj : valores){
+                somaNs += obj.getN();
+                somaTemps += obj.getSoma();
             }
 
-            // Escreve os resultados finais no arquivo
-
-            con.write(ano, new IntWritable(soma));
-
+            // emitir <cahve, (somaNs, somaTemps>
+            con.write(key,new mediaAnoComm2(somaNs, somaTemps));
         }
     }
 }

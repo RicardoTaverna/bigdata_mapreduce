@@ -1,21 +1,20 @@
-package ex04;
+package ex05;
 
-import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Writable;
 
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
 
-public class mediaAnoComm implements Writable {
+public class mediaAnoComm2 implements Writable {
     //Atributos
     private int n;
     private float soma;
 
-    public mediaAnoComm() {
+    public mediaAnoComm2() {
     }
 
-    public mediaAnoComm(int n, float soma) {
+    public mediaAnoComm2(int n, float soma) {
         this.n = n;
         this.soma = soma;
     }
